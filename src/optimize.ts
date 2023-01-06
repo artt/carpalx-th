@@ -64,13 +64,6 @@ let pass = 1
 const baseCarpalx = new Carpalx({ layout: new Layout({ name: "kedmanee" }) })
 const baselineEffort = baseCarpalx.sumTypingEfforts(true)
 
-// let thai5kEffort = baseCarpalx.typingEffort(tnc5k)
-// let wisesightEffort = baseCarpalx.typingEffort(wisesight)
-// let wongnaiEffort = baseCarpalx.typingEffort(wongnai)
-// let thaisumEffort = baseCarpalx.typingEffort(thaisum)
-// let sugreeTweetsEffort = baseCarpalx.typingEffort(sugreeTweets)
-// let thaiTweetsEffort = baseCarpalx.typingEffort(thaiTweets)
-
 const percentRatio = 100 / baselineEffort
 let currentSumEffort = 100
 let baseSumEffort = 100
@@ -118,7 +111,7 @@ while (true) {
       // update bests
       baseSumEffort = currentSumEffort
     } else {
-      console.log("Simulated Annealing with probability:", prob.toFixed(30))
+      // console.log("Simulated Annealing with probability:", prob.toFixed(30))
     }
 
     // console.log(currentLayout.matrix)
@@ -140,15 +133,15 @@ while (true) {
       )
     }
   } else {
-    console.log(
-      "This layout is not better, skipping ",
-      currentSumEffort,
-      "vs",
-      baseSumEffort
-    )
+    // console.log(
+    //   "This layout is not better, skipping ",
+    //   currentSumEffort,
+    //   "vs",
+    //   baseSumEffort
+    // )
     currentLayout.matrix = currentMatrix
 
-    console.log("Annealing Probability (failed)", prob.toFixed(30))
+    // console.log("Annealing Probability (failed)", prob.toFixed(30))
   }
 
   if (pass >= N) {
