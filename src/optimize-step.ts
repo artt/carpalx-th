@@ -93,7 +93,70 @@ let minSumEffort = baselineEffort * percentRatio // Should be 100
 
 console.log("Optimizing")
 
-while (true) {
+// number of movable keys
+// const numMovable = lockedKeys.reduce((res, item) => res + item.reduce((res, item) => (item ? 0 : 1) + res, 0), 0)
+// console.log("Movable keys:", numMovable)
+
+// const numSteps = 2
+
+const pos = currentLayout.pos
+const numKeys = pos.length
+const numSteps = 2
+
+for (let pass = 0; pass < numSteps; pass ++) {
+  
+  console.log("PASS", pass)
+  
+  let a, b, x, y
+  
+  for (a = 0; a < numKeys; a ++) {
+    [x, y] = currentLayout.pos[a];
+    if (lockedKeys[x] && lockedKeys[x, y])
+      continue
+    for (b = a + 1; b < numKeys; b ++) {
+      [x, y] = currentLayout.pos[b];
+      if (lockedKeys[x] && lockedKeys[x, y])
+        continue
+      // now try swap  
+      currentLayout.swapKeyPairForLayoutAtIndices(a, b)
+      const currentCarpalx = new Carpalx({ layout: currentLayout })
+      let currentThai5kEffort = currentCarpalx.typingEffort(tnc5k),
+        currentWisesightEffort = currentCarpalx.typingEffort(wisesight),
+        currentWongnaiEffort = currentCarpalx.typingEffort(wongnai),
+        currentThaisumEffort = currentCarpalx.typingEffort(thaisum as Triads),
+        currentThaiTweetsEffort = currentCarpalx.typingEffort(thaiTweets as Triads),
+        currentSugreeTweetsEffort = currentCarpalx.typingEffort(sugreeTweets as Triads)
+      const currentSumEffort =
+      (currentThai5kEffort +
+        currentWisesightEffort +
+        currentWongnaiEffort +
+        currentThaiTweetsEffort +
+        currentSugreeTweetsEffort +
+        currentThaisumEffort) *
+      percentRatio
+  
+      const baseSumEffort =
+        (thai5kEffort +
+          wisesightEffort +
+          wongnaiEffort +
+          thaisumEffort +
+          thaiTweetsEffort +
+          sugreeTweetsEffort) *
+        percentRatio
+    
+      const effortDiff = currentSumEffort - baseSumEffort
+      const isImproved = effortDiff < 0
+      
+    }
+  }
+
+
+
+
+}
+
+
+while (false) {
   console.clear()
   // const lines = process.stdout.getWindowSize()[1];
   // for(let i = 0; i < lines; i++) {
@@ -110,44 +173,10 @@ while (true) {
 
   const currentMatrix = JSON.parse(JSON.stringify(currentLayout.matrix))
 
-  for (let i = 0; i < 1 + ~~(Math.random() * 3); i++) {
-    currentLayout.swapKeyPairForLayout()
-  }
-  const currentCarpalx = new Carpalx({ layout: currentLayout })
 
-  console.log(
-    "Typing Effort (TNC 5000 triads) :",
-    (currentThai5kEffort = currentCarpalx.typingEffort(tnc5k))
-  )
+  // edit from here onward
 
-  console.log(
-    "Typing Effort (Wisesight Sentiment triads) :",
-    (currentWisesightEffort = currentCarpalx.typingEffort(wisesight))
-  )
 
-  console.log(
-    "Typing Effort (Wongnai Corpus triads) :",
-    (currentWongnaiEffort = currentCarpalx.typingEffort(wongnai))
-  )
-
-  console.log(
-    "Typing Effort (Thaisum triads) :",
-    (currentThaisumEffort = currentCarpalx.typingEffort(thaisum as Triads))
-  )
-
-  console.log(
-    "Typing Effort (ThaiTweets triads) :",
-    (currentThaiTweetsEffort = currentCarpalx.typingEffort(
-      thaiTweets as Triads
-    ))
-  )
-
-  console.log(
-    "Typing Effort (SugreeTweets triads) :",
-    (currentSugreeTweetsEffort = currentCarpalx.typingEffort(
-      sugreeTweets as Triads
-    ))
-  )
 
   const currentSumEffort =
     (currentThai5kEffort +

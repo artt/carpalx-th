@@ -20,12 +20,20 @@ const fh = 1,
 
 const [k1, k2, k3] = wb
 
+// export const baseEffortMatrix = [
+//   // [4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 5, 6], // number row
+//   [6, 6, 6, 6, 8, 10, 6, 6, 6, 6, 8, 10], // number row (larger)
+//   [2, 2, 2, 2, 2.5, 3, 2, 2, 2, 2, 3, 6, 8], //row 1
+//   [0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2], //row 2 base
+//   [2, 2, 2, 1, 3.5, 2, 1, 2, 2, 2], //down row
+// ]
+
 export const baseEffortMatrix = [
   // [4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 5, 6], // number row
-  [6, 6, 6, 6, 8, 10, 6, 6, 6, 6, 8, 10], // number row (larger)
-  [2, 2, 2, 2, 2.5, 3, 2, 2, 2, 2, 3, 6, 8], //row 1
+  [8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8], // number row (larger)
+  [2, 2, 2, 2, 3, 3, 2, 2, 2, 2, 8, 8, 8], //row 1
   [0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2], //row 2 base
-  [2, 2, 2, 1, 3.5, 2, 1, 2, 2, 2], //down row
+  [2, 2, 2, 1, 3, 3, 2, 2, 2, 2], //down row
 ]
 
 export interface Triads {

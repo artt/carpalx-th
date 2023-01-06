@@ -1,8 +1,9 @@
-import { swapKeyPair } from "./utils"
+import { swapKeyPair, swapKeysAtIndices } from "./utils"
 export interface LayoutOptions {
   name:
     | "pattachote"
     | "kedmanee"
+    | "kedmanee_base"
     | "ikbaeb"
     | "custom"
     | "manoonchai_v01"
@@ -48,6 +49,19 @@ export const LAYOUTS: ILayoutMatrix = {
     ["๐", '"', "ฎ", "ฑ", "ธ", "ํ", "๊", "ณ", "ฯ", "ญ", "ฐ", ",", "ฅ"],
     ["ฤ", "ฆ", "ฏ", "โ", "ฌ", "็", "๋", "ษ", "ศ", "ซ", "."],
     ["(", ")", "ฉ", "ฮ", "ฺ", "์", "?", "ฒ", "ฬ", "ฦ"],
+  ],
+  kedmanee_base: [
+    // kedmanee, with number rows and pinky symbols
+    // least used letters (from https://th.wikipedia.org/wiki/อักษรไทย) out
+    // ฃ ฅ ฌ ฬ ฑ ฆ ฏ , . ฦ ฺ ฤ
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="],
+    ["ๆ", "ไ", "ำ", "พ", "ะ", "ั", "ี", "ร", "น", "ย", "[", "]", "\\"],
+    ["ฟ", "ห", "ก", "ด", "เ", "้", "่", "า", "ส", "ว", "ง"],
+    ["ผ", "ป", "แ", "อ", "ิ", "ื", "ท", "ม", "ใ", "ฝ"],
+    ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+"],
+    ["ภ", "ถ", "ฎ", " ู", "ธ", " ุ", "๊", "ณ", "ฯ", "ญ", "{", "}", "|"],
+    [" ึ", "ล", "บ", "โ", "ช", "็", "๋", "ษ", "ศ", "ซ", '"'],
+    ["จ", "ข", "ฉ", "ฮ", "ค", "์", "ต", "ฒ", "ฐ", "?"],
   ],
   ikbaeb: [
     // https://gitlab.com/sahabandha/ikbaeb-th
@@ -117,6 +131,7 @@ const FINGER_MAP = [0, 1, 2, 3, 3, 6, 6, 7, 8, 9, 9, 9, 9, 9]
 export class Layout {
   public name: LayoutOptions["name"]
   public lockedKeys: ILayout<boolean>
+  public pos: [number, number][]
   private currentLayout: ILayout<string>
   private rawRowCache: { [char: string]: number } = {}
   private columnCache: { [char: string]: number } = {}
@@ -125,6 +140,9 @@ export class Layout {
     this.name = options.name
     this.currentLayout = LAYOUTS[this.name]
     this.lockedKeys = (options.lockedKeys || []) as ILayout<boolean>
+    this.pos = this.currentLayout
+      .map((a: string[], i) => a.map((_, j) => [i, j]))
+      .flat() as [number, number][];    
   }
 
   public get matrix() {
@@ -145,6 +163,14 @@ export class Layout {
     this.currentLayout = swapKeyPair(
       this.currentLayout,
       this.lockedKeys
+    ) as ILayout<string>
+    this.clearCache()
+  }
+
+  public swapKeyPairForLayoutAtIndices(a: number, b: number) {
+    this.currentLayout = swapKeysAtIndices(
+      this.currentLayout,
+      a, b
     ) as ILayout<string>
     this.clearCache()
   }
