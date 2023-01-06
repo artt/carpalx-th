@@ -109,10 +109,10 @@ while (true) {
         effortDiff
       )
       // update bests
-      baseSumEffort = currentSumEffort
     } else {
       // console.log("Simulated Annealing with probability:", prob.toFixed(30))
     }
+    baseSumEffort = currentSumEffort
 
     // console.log(currentLayout.matrix)
 
