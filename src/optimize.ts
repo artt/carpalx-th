@@ -85,9 +85,6 @@ while (true) {
   //     console.log('\r\n');
   // }
 
-  // store current effort first
-  baseSumEffort = currentSumEffort
-
   // console.log("PASS", pass)
 
   const currentMatrix = JSON.parse(JSON.stringify(currentLayout.matrix))
@@ -118,6 +115,8 @@ while (true) {
         "Diff:",
         effortDiff
       )
+      // update bests
+      baseSumEffort = currentSumEffort
     } else {
       console.log("Simulated Annealing with probability:", prob.toFixed(30))
     }
