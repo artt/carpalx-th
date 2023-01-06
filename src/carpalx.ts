@@ -1,5 +1,13 @@
 import { Layout } from "./layout"
 
+import tnc5k from "../data/thai5k-freq.json"
+import { wisesight } from "../data/wisesight"
+import { wongnai } from "../data/wongnai"
+import { thaiTweets } from "../data/thai-tweets"
+import { sugreeTweets } from "../data/sugree-tweets"
+// import thaisumTestset from "../data/thaisum-testset.json"
+import thaisum from "../data/thaisum-full.json"
+
 // Default model params
 const kb = 0.3555,
   kp = 0.6423,
@@ -41,6 +49,31 @@ export default class Carpalx {
 
   constructor(options: CarpalxOptions = { layout: new Layout() }) {
     this.layout = options.layout
+  }
+
+  public sumTypingEfforts(quiet: boolean = false) {
+
+    let currentThai5kEffort = this.typingEffort(tnc5k),
+      currentWisesightEffort = this.typingEffort(wisesight),
+      currentWongnaiEffort = this.typingEffort(wongnai),
+      currentThaisumEffort = this.typingEffort(thaisum as Triads),
+      currentThaiTweetsEffort = this.typingEffort(thaiTweets as Triads),
+      currentSugreeTweetsEffort = this.typingEffort(sugreeTweets as Triads)
+
+    if (!quiet) {
+      console.log("Typing Effort (TNC 5000 triads) :", currentThai5kEffort)
+      console.log("Typing Effort (Wisesight Sentiment triads) :", currentWisesightEffort)
+      console.log("Typing Effort (Wongnai Corpus triads) :", currentWongnaiEffort)
+      console.log("Typing Effort (Thaisum triads) :", currentThaisumEffort)
+      console.log("Typing Effort (ThaiTweets triads) :", currentThaiTweetsEffort)
+      console.log("Typing Effort (SugreeTweets triads) :", currentSugreeTweetsEffort)
+    }
+    return(currentThai5kEffort
+      + currentWisesightEffort
+      + currentWongnaiEffort
+      + currentThaisumEffort
+      + currentThaiTweetsEffort
+      + currentSugreeTweetsEffort)
   }
 
   // 𝐸=1𝑁∑𝑖𝑛𝑖𝑒𝑖

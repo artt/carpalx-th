@@ -3,13 +3,13 @@ import fs from "fs"
 import Carpalx, { Triads } from "./carpalx"
 import { ILayout, Layout, LayoutOptions } from "./layout"
 
-import tnc5k from "../data/thai5k-freq.json"
-import { wisesight } from "../data/wisesight"
-import { wongnai } from "../data/wongnai"
-import { thaiTweets } from "../data/thai-tweets"
-import { sugreeTweets } from "../data/sugree-tweets"
-// import thaisumTestset from "../data/thaisum-testset.json"
-import thaisum from "../data/thaisum-full.json"
+// import tnc5k from "../data/thai5k-freq.json"
+// import { wisesight } from "../data/wisesight"
+// import { wongnai } from "../data/wongnai"
+// import { thaiTweets } from "../data/thai-tweets"
+// import { sugreeTweets } from "../data/sugree-tweets"
+// // import thaisumTestset from "../data/thaisum-testset.json"
+// import thaisum from "../data/thaisum-full.json"
 
 const layoutName = (process.argv[2] as LayoutOptions["name"]) || "kedmanee"
 const outputFile = process.argv[3] || "out/result.txt"
@@ -62,41 +62,33 @@ let currentLayout = new Layout({
 let pass = 1
 
 const baseCarpalx = new Carpalx({ layout: new Layout({ name: "kedmanee" }) })
+const baselineEffort = baseCarpalx.sumTypingEfforts(true)
 
-let thai5kEffort = baseCarpalx.typingEffort(tnc5k)
-let wisesightEffort = baseCarpalx.typingEffort(wisesight)
-let wongnaiEffort = baseCarpalx.typingEffort(wongnai)
-let thaisumEffort = baseCarpalx.typingEffort(thaisum)
-let sugreeTweetsEffort = baseCarpalx.typingEffort(sugreeTweets)
-let thaiTweetsEffort = baseCarpalx.typingEffort(thaiTweets)
+// let thai5kEffort = baseCarpalx.typingEffort(tnc5k)
+// let wisesightEffort = baseCarpalx.typingEffort(wisesight)
+// let wongnaiEffort = baseCarpalx.typingEffort(wongnai)
+// let thaisumEffort = baseCarpalx.typingEffort(thaisum)
+// let sugreeTweetsEffort = baseCarpalx.typingEffort(sugreeTweets)
+// let thaiTweetsEffort = baseCarpalx.typingEffort(thaiTweets)
 
-const baselineEffort =
-  thai5kEffort +
-  wisesightEffort +
-  wongnaiEffort +
-  thaisumEffort +
-  sugreeTweetsEffort +
-  thaiTweetsEffort
 const percentRatio = 100 / baselineEffort
-
+let currentSumEffort = 100
+let baseSumEffort = 100
 let minSumEffort = baselineEffort * percentRatio // Should be 100
 
 console.log("Optimizing")
 
 while (true) {
-  console.clear()
+  // console.clear()
   // const lines = process.stdout.getWindowSize()[1];
   // for(let i = 0; i < lines; i++) {
   //     console.log('\r\n');
   // }
 
-  console.log("PASS", pass)
-  let currentThai5kEffort = 0,
-    currentWisesightEffort = 0,
-    currentWongnaiEffort = 0,
-    currentThaisumEffort = 0,
-    currentThaiTweetsEffort = 0,
-    currentSugreeTweetsEffort = 0
+  // store current effort first
+  baseSumEffort = currentSumEffort
+
+  // console.log("PASS", pass)
 
   const currentMatrix = JSON.parse(JSON.stringify(currentLayout.matrix))
 
@@ -104,58 +96,9 @@ while (true) {
     currentLayout.swapKeyPairForLayout()
   }
   const currentCarpalx = new Carpalx({ layout: currentLayout })
+  currentSumEffort = currentCarpalx.sumTypingEfforts(true) * percentRatio
 
-  console.log(
-    "Typing Effort (TNC 5000 triads) :",
-    (currentThai5kEffort = currentCarpalx.typingEffort(tnc5k))
-  )
-
-  console.log(
-    "Typing Effort (Wisesight Sentiment triads) :",
-    (currentWisesightEffort = currentCarpalx.typingEffort(wisesight))
-  )
-
-  console.log(
-    "Typing Effort (Wongnai Corpus triads) :",
-    (currentWongnaiEffort = currentCarpalx.typingEffort(wongnai))
-  )
-
-  console.log(
-    "Typing Effort (Thaisum triads) :",
-    (currentThaisumEffort = currentCarpalx.typingEffort(thaisum as Triads))
-  )
-
-  console.log(
-    "Typing Effort (ThaiTweets triads) :",
-    (currentThaiTweetsEffort = currentCarpalx.typingEffort(
-      thaiTweets as Triads
-    ))
-  )
-
-  console.log(
-    "Typing Effort (SugreeTweets triads) :",
-    (currentSugreeTweetsEffort = currentCarpalx.typingEffort(
-      sugreeTweets as Triads
-    ))
-  )
-
-  const currentSumEffort =
-    (currentThai5kEffort +
-      currentWisesightEffort +
-      currentWongnaiEffort +
-      currentThaiTweetsEffort +
-      currentSugreeTweetsEffort +
-      currentThaisumEffort) *
-    percentRatio
-
-  const baseSumEffort =
-    (thai5kEffort +
-      wisesightEffort +
-      wongnaiEffort +
-      thaisumEffort +
-      thaiTweetsEffort +
-      sugreeTweetsEffort) *
-    percentRatio
+  // console.log(currentSumEffort, baseSumEffort)
 
   const effortDiff = currentSumEffort - baseSumEffort
   const isImproved = effortDiff < 0
@@ -166,6 +109,7 @@ while (true) {
 
   if (isImproved || Math.random() < prob) {
     if (isImproved) {
+      console.log("PASS", pass)
       console.log(
         "Found better layout with effort:",
         currentSumEffort,
@@ -177,13 +121,6 @@ while (true) {
     } else {
       console.log("Simulated Annealing with probability:", prob.toFixed(30))
     }
-
-    thai5kEffort = currentThai5kEffort
-    wisesightEffort = currentWisesightEffort
-    wongnaiEffort = currentWongnaiEffort
-    thaisumEffort = currentThaisumEffort
-    thaiTweetsEffort = currentThaiTweetsEffort
-    sugreeTweetsEffort = currentSugreeTweetsEffort
 
     // console.log(currentLayout.matrix)
 
