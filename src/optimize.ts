@@ -88,8 +88,6 @@ while (true) {
   const currentCarpalx = new Carpalx({ layout: currentLayout })
   currentSumEffort = currentCarpalx.sumTypingEfforts(true) * percentRatio
 
-  // console.log(currentSumEffort, baseSumEffort)
-
   const effortDiff = currentSumEffort - baseSumEffort
   const isImproved = effortDiff < 0
 
@@ -110,7 +108,7 @@ while (true) {
       )
       // update bests
     } else {
-      // console.log("Simulated Annealing with probability:", prob.toFixed(30))
+      console.log("Simulated Annealing with probability:", prob.toFixed(30))
     }
     baseSumEffort = currentSumEffort
 
