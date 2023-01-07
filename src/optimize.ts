@@ -44,12 +44,23 @@ const lockedKeys: ILayout<boolean> = [
   // [T,T,T,T,T,T,T,T,T,T,T,T,T],
   // [T,T,T,T,T,T,T,T,T,T,T],
   // [T,T,T,T,T,T,T,T,T,T],
+
+  // [T,T,T,T,T,T,T,T,T,T,T,T],
+  // [F,F,F,F,F,F,F,F,F,F,F,T,T],
+  // [F,F,F,F,F,F,F,F,F,F,F],
+  // [F,F,F,F,F,F,F,F,F,F],
+  // [T,T,T,T,T,T,T,T,T,T,T,T],
+  // [F,F,F,F,F,F,F,F,F,F,F,T,T],
+  // [F,F,F,F,F,F,F,F,F,F,T],
+  // [F,F,F,F,F,F,F,F,F,T],
+
+  // for kedmanee_base into colemak-dh
   [T,T,T,T,T,T,T,T,T,T,T,T],
-  [F,F,F,F,F,F,F,F,F,F,F,T,T],
+  [F,F,F,F,F,F,F,F,F,F,T,T,T],
   [F,F,F,F,F,F,F,F,F,F,F],
   [F,F,F,F,F,F,F,F,F,F],
   [T,T,T,T,T,T,T,T,T,T,T,T],
-  [F,F,F,F,F,F,F,F,F,F,F,T,T],
+  [F,F,F,F,F,F,F,F,F,F,T,T,T],
   [F,F,F,F,F,F,F,F,F,F,T],
   [F,F,F,F,F,F,F,F,F,T],
 ]
