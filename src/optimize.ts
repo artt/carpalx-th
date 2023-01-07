@@ -1,15 +1,7 @@
 import fs from "fs"
 
-import Carpalx, { Triads } from "./carpalx"
+import Carpalx from "./carpalx"
 import { ILayout, Layout, LayoutOptions } from "./layout"
-
-// import tnc5k from "../data/thai5k-freq.json"
-// import { wisesight } from "../data/wisesight"
-// import { wongnai } from "../data/wongnai"
-// import { thaiTweets } from "../data/thai-tweets"
-// import { sugreeTweets } from "../data/sugree-tweets"
-// // import thaisumTestset from "../data/thaisum-testset.json"
-// import thaisum from "../data/thaisum-full.json"
 
 const layoutName = (process.argv[2] as LayoutOptions["name"]) || "kedmanee"
 const outputFile = process.argv[3] || "out/result.txt"
