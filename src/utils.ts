@@ -69,3 +69,23 @@ export function swapKeyPair(arr: string[][], lockedKeys: boolean[][] = []) {
 
   return arr;
 }
+
+
+// swap keys at location a and b
+// no check on lockedKeys is performed
+export function swapKeysAtIndices(arr: string[][], a: number, b: number) {
+
+  const keys: [number, number][] = arr
+    .map((a: string[], i) => a.map((_, j) => [i, j]))
+    .flat() as [number, number][];
+
+    // Extract keys
+  const [i, j] = keys[a];
+  const [m, n] = keys[b];
+
+  // Swap in place
+  [arr[i][j], arr[m][n]] = [arr[m][n], arr[i][j]];
+
+  return arr;
+
+}

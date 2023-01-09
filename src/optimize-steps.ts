@@ -1,6 +1,5 @@
 import fs from "fs"
-
-import Carpalx, { Triads } from "./carpalx"
+import Carpalx from "./carpalx"
 import { ILayout, Layout, LayoutOptions } from "./layout"
 
 const layoutName = (process.argv[2] as LayoutOptions["name"]) || "kedmanee"
@@ -17,11 +16,6 @@ console.log("Arguments: ", { outputFile, layoutName, noLock })
 //   k = 10, // Constant
 //   p0 = 1, // Initial probability
 //   N = 50000 // Number of iterations until probability reaches 0
-
-const t0 = 1,
-  k = 10,
-  p0 = 1,
-  N = 2000000
 
 const T = true,
   F = false
@@ -57,98 +51,96 @@ const lockedKeys: ILayout<boolean> = [
   [F,F,F,F,F,F,F,F,F,T],
 ]
 
+// let boolLockedKeys = lockedKeys as boolean[][]
+
 let currentLayout = new Layout({
   name: layoutName,
   lockedKeys: noLock ? [] : lockedKeys,
 })
-
-let pass = 1
 
 const baseCarpalx = new Carpalx({ layout: new Layout({ name: "kedmanee" }) })
 const baselineEffort = baseCarpalx.sumTypingEfforts(true)
 
 const percentRatio = 100 / baselineEffort
 let currentSumEffort = 100
-let baseSumEffort = 100
-let minSumEffort = baselineEffort * percentRatio // Should be 100
 
 console.log("Optimizing")
 
+const pos = currentLayout.pos
+const numKeys = pos.length
+const numSteps = 2
+
+let startMatrix
+// let bestMatrix
+
+let minPrevPass = 1000
+
+let pass = 0
 while (true) {
-  // console.clear()
-  // const lines = process.stdout.getWindowSize()[1];
-  // for(let i = 0; i < lines; i++) {
-  //     console.log('\r\n');
-  // }
 
-  // console.log("PASS", pass)
+  pass ++
+  
+  console.log("PASS", pass)
 
-  const currentMatrix = JSON.parse(JSON.stringify(currentLayout.matrix))
+  startMatrix = JSON.parse(JSON.stringify(currentLayout.matrix))
+  console.log("Staring with...")
+  console.log(`${currentLayout.matrix
+    .map((l) => JSON.stringify(l))
+    .join("\n")}\n==========================\n`)
 
-  for (let i = 0; i < 1 + ~~(Math.random() * 3); i++) {
-    currentLayout.swapKeyPairForLayout()
-  }
-  const currentCarpalx = new Carpalx({ layout: currentLayout })
-  currentSumEffort = currentCarpalx.sumTypingEfforts(true) * percentRatio
+  let minThisPass = minPrevPass
+  let bestA = -1, bestB = -1
+  
+  for (let a = 0; a < numKeys; a ++) {
+    const [xa, ya] = currentLayout.pos[a];
+    if (lockedKeys[xa] && lockedKeys[xa][ya])
+      continue
+    for (let b = a + 1; b < numKeys; b ++) {
+      const [xb, yb] = currentLayout.pos[b];
+      if (lockedKeys[xb] && lockedKeys[xb][yb])
+        continue
+      // now try swap
+      currentLayout.matrix = JSON.parse(JSON.stringify(startMatrix))
+      currentLayout.swapKeyPairForLayoutAtIndices(a, b)
+      const currentCarpalx = new Carpalx({ layout: currentLayout })
+      currentSumEffort = currentCarpalx.sumTypingEfforts(true) * percentRatio
 
-  const effortDiff = currentSumEffort - baseSumEffort
-  const isImproved = effortDiff < 0
-
-  // Simulated Annealing (Probably accept if not improving to prevent local minima)
-  let temperature = t0 * Math.exp((-k * pass) / N) // Range: [t0 -> 0]
-  let prob = p0 * Math.exp(-Math.abs(effortDiff) / temperature) // Range: [p0 -> 0]
-
-  if (isImproved || Math.random() < prob) {
-    if (isImproved) {
-      console.log("PASS", pass)
-      console.log(
-        "Found better layout with effort:",
-        currentSumEffort,
-        "vs",
-        baseSumEffort,
-        "Diff:",
-        effortDiff
-      )
-      // update bests
-    } else {
-      console.log("Simulated Annealing with probability:", prob.toFixed(30))
+      if (currentSumEffort < minThisPass) {
+        console.log("This is a better way!", a, b, currentSumEffort, "\tswap:", startMatrix[xa][ya], "<->", startMatrix[xb][yb])
+        bestA = a
+        bestB = b
+        minThisPass = currentSumEffort
+      }
+      
     }
-    baseSumEffort = currentSumEffort
-
-    // console.log(currentLayout.matrix)
-
-    // Write to file only improvements
-    if (currentSumEffort < minSumEffort) {
-      minSumEffort = currentSumEffort
-
-      fs.appendFileSync(
-        outputFile,
-        `${pass} (Effort: ${currentSumEffort}, Diff: ${
-          currentSumEffort - baseSumEffort
-        }, Prob: ${prob.toFixed(
-          30
-        )}, Annealed: ${!isImproved})\n\n${currentLayout.matrix
-          .map((l) => JSON.stringify(l))
-          .join("\n")}\n==========================\n`,
-        "utf-8" //
-      )
-    }
-  } else {
-    // console.log(
-    //   "This layout is not better, skipping ",
-    //   currentSumEffort,
-    //   "vs",
-    //   baseSumEffort
-    // )
-    currentLayout.matrix = currentMatrix
-
-    // console.log("Annealing Probability (failed)", prob.toFixed(30))
   }
 
-  if (pass >= N) {
-    console.log("Run completed.")
-    process.exit(0)
-  } else {
-    pass++
+  if (bestA > -1 && bestB > -1) {
+    minPrevPass = minThisPass
+    currentLayout.matrix = JSON.parse(JSON.stringify(startMatrix))
+    currentLayout.swapKeyPairForLayoutAtIndices(bestA, bestB)
+    const [xa, ya] = currentLayout.pos[bestA];
+    const [xb, yb] = currentLayout.pos[bestB];
+    console.log('=============')
+    console.log(`Finished pass ${pass}`)
+    console.log(bestA, bestB, minThisPass)
+    console.log("Swap:", startMatrix[xa][ya], "<->", startMatrix[xb][yb])
+    console.log('=============')
+
+    fs.appendFileSync(
+      outputFile,
+      `${pass}: ${minThisPass.toFixed(5)} Swap ${startMatrix[xa][ya]}, "<->", ${startMatrix[xb][yb]
+      }\n\n${currentLayout.matrix
+        .map((l) => JSON.stringify(l))
+        .join("\n")}\n==========================\n`,
+      "utf-8"
+    )
   }
+  else {
+    // no possible improvement
+    console.log("No further improvement")
+    break
+  }
+
 }
+

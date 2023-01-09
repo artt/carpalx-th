@@ -1,4 +1,4 @@
-import { swapKeyPair } from "./utils"
+import { swapKeyPair, swapKeysAtIndices } from "./utils"
 export interface LayoutOptions {
   name:
     | "pattachote"
@@ -54,15 +54,43 @@ export const LAYOUTS: ILayoutMatrix = {
     // kedmanee, with number rows and pinky symbols
     // least used letters (from https://th.wikipedia.org/wiki/อักษรไทย) out
     // ฃ ฅ ฌ ฬ ฑ ฆ ฏ , . ฦ ฺ ฤ
+    // put in ภ ถ ุ ู ึ ล บ ช จ ข ค ต ฐ 
+    // put in ภ ถ ุ ู         ึ ล บ ช จ ข ค ต ฐ
+    // http://pioneer.chula.ac.th/~awirote/ling/ThaiStat.pdf
+    // ล = 2.29
+    // ต = 1.99
+    // บ = 1.83
+    // ค = 1.74
+    // จ = 1.64
+    // ข = 1.14
+    // ช = 1.07
+    // ุ = 1.03
+    // ู = 0.77
+    // ึ = 0.50
+    // ถ = 0.40
+    // ภ = 0.28
+    // ฐ = 0.21
     ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="],
+    
     ["ๆ", "ไ", "ำ", "พ", "ะ", "ั", "ี", "ร", "น", "ย", "[", "]", "\\"],
+    
     ["ฟ", "ห", "ก", "ด", "เ", "้", "่", "า", "ส", "ว", "ง"],
+    
     ["ผ", "ป", "แ", "อ", "ิ", "ื", "ท", "ม", "ใ", "ฝ"],
+    
     ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+"],
-    ["ภ", "ถ", "ฎ", " ู", "ธ", " ุ", "๊", "ณ", "ฯ", "ญ", "{", "}", "|"],
-    [" ึ", "ล", "บ", "โ", "ช", "็", "๋", "ษ", "ศ", "ซ", '"'],
-    ["จ", "ข", "ฉ", "ฮ", "ค", "์", "ต", "ฒ", "ฐ", "?"],
+    
+  //  v    v         v         v
+    ["ุ", "ช", "ฎ", "ู", "ธ", "ภ", "๊", "ณ", "ฯ", "ญ", "{", "}", "|"],
+
+  //  v    v    v         v
+    ["จ", "ล", "บ", "โ", "ถ", "็", "๋", "ษ", "ศ", "ซ", '"'],
+
+  //  v    v              v        v         v
+    ["ึ", "ข", "ฉ", "ฮ", "ฐ", "์", "ต", "ฒ", "ค", "?"],
   ],
+
+  // 
   ikbaeb: [
     // https://gitlab.com/sahabandha/ikbaeb-th
     ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="],
@@ -131,6 +159,7 @@ const FINGER_MAP = [0, 1, 2, 3, 3, 6, 6, 7, 8, 9, 9, 9, 9, 9]
 export class Layout {
   public name: LayoutOptions["name"]
   public lockedKeys: ILayout<boolean>
+  public pos: [number, number][]
   private currentLayout: ILayout<string>
   private rawRowCache: { [char: string]: number } = {}
   private columnCache: { [char: string]: number } = {}
@@ -139,6 +168,9 @@ export class Layout {
     this.name = options.name
     this.currentLayout = LAYOUTS[this.name]
     this.lockedKeys = (options.lockedKeys || []) as ILayout<boolean>
+    this.pos = this.currentLayout
+      .map((a: string[], i) => a.map((_, j) => [i, j]))
+      .flat() as [number, number][];    
   }
 
   public get matrix() {
@@ -159,6 +191,14 @@ export class Layout {
     this.currentLayout = swapKeyPair(
       this.currentLayout,
       this.lockedKeys
+    ) as ILayout<string>
+    this.clearCache()
+  }
+
+  public swapKeyPairForLayoutAtIndices(a: number, b: number) {
+    this.currentLayout = swapKeysAtIndices(
+      this.currentLayout,
+      a, b
     ) as ILayout<string>
     this.clearCache()
   }

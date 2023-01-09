@@ -10,6 +10,7 @@
     "test": "jest",
     "start": "ts-node src/main",
     "optimize": "ts-node -O '{\"noUnusedLocals\": false}' src/optimize",
+    "optimize-steps": "ts-node -O '{\"noUnusedLocals\": false}' src/optimize-steps",
     "generate-triads": "ts-node src/generate-triads",
     "generate-tnc": "ts-node src/generate-tnc",
     "filter-words": "ts-node src/filter-words",

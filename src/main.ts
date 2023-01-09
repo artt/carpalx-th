@@ -11,6 +11,7 @@ import { thaiTweets } from "../data/thai-tweets"
 
 const layoutNames: Array<LayoutOptions["name"]> = [
   "kedmanee",
+  "kedmanee_base",
   "pattachote",
   "ikbaeb",
   "manoonchai_v01",
